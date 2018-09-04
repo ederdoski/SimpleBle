@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This project is a simple interface to facilitate the use of the native Android API, Bluetooth le (BLE), it is simply a class that develops, which allows basic operations with BLE, since after searching several libraries in different no sites were adapted to my requeriment, feel free to modify this class to your liking, or adapt it for what best suits your project.
+This project is a simple interface to facilitate the use of the native API of Android, Bluetooth le (BLE), which allows basic operations with BLE, since after searching several libraries in different sites have not been adapted to my basic requirements, I hope that this library saves you programming time :)
 
 You can download library files from JCenter or GitHub.
 
@@ -13,20 +13,20 @@ You can download library files from JCenter or GitHub.
 Add the following in your app's build.gradle file:
 
 ```
-	repositories {
-	  jcenter()
-	}
+    repositories {
+        jcenter()
+    }
 ```
 ![Warning](img/warning.png) **Min SDK version is 18** ![Warning](img/warning.png)
 ```
-	defaultConfig {
-	    minSdkVersion 18
-	    ...
-	}
+    defaultConfig {
+        minSdkVersion 18
+        ...
+    }
 
-	dependencies {
-	    implementation "com.ederdoski.ble:simpleble:1.0"
-	}
+    dependencies {
+        implementation "com.ederdoski.ble:simpleble:1.0"
+    }
 ```
 
 
@@ -48,77 +48,77 @@ Add the following in your app's build.gradle file:
 
 3) Once you verify that all the permissions have been accepted and verify that the gps is turned on, scan devices in the area.
 ```
-	if(ble.isReadyForScan()){
-		Handler mHandler = new Handler();
-		ble.scanLeDevice(true);
+    if(ble.isReadyForScan()){
+        Handler mHandler = new Handler();
+        ble.scanLeDevice(true);
 
-		mHandler.postDelayed(() -> {
+        mHandler.postDelayed(() -> {
 
-			//--The scan is over, you should recover the found devices.
-			Log.v("Devices found: ", String.valueOf(ble.getListDevices()));
+            //--The scan is over, you should recover the found devices.
+            Log.v("Devices found: ", String.valueOf(ble.getListDevices()));
 
-		}, ble.getScanPeriod());
-	}
+    }, ble.getScanPeriod());
+}
 ```
 
 4) Create an object of type BleCallback, this object will serve you to manage the different events that you can use once you connect the bluetooth with a device.
 
 ```
-	new BleCallback(){
+    new BleCallback(){
 
-        @Override
-        public void onBleConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            super.onBleConnectionStateChange(gatt, status, newState);
-
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Connected to GATT server.", Toast.LENGTH_SHORT).show());
-            }
-
-            if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Disconnected from GATT server.", Toast.LENGTH_SHORT).show());
-            }
+    @Override
+    public void onBleConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        super.onBleConnectionStateChange(gatt, status, newState);
+    
+        if (newState == BluetoothProfile.STATE_CONNECTED) {
+    	runOnUiThread(() -> Toast.makeText(MainActivity.this, "Connected to GATT server.", Toast.LENGTH_SHORT).show());
         }
-
-        @Override
-        public void onBleServiceDiscovered(BluetoothGatt gatt, int status) {
-            super.onBleServiceDiscovered(gatt, status);
-             if (status != BluetoothGatt.GATT_SUCCESS) {
-                Log.e("Ble ServiceDiscovered","onServicesDiscovered received: " + status);
-            }
+    
+        if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+    	runOnUiThread(() -> Toast.makeText(MainActivity.this, "Disconnected from GATT server.", Toast.LENGTH_SHORT).show());
         }
+    }
 
-        @Override
-        public void onBleCharacteristicChange(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            super.onBleCharacteristicChange(gatt, characteristic);
-             Log.i("BluetoothLEHelper","onCharacteristicChanged Value: " + Arrays.toString(characteristic.getValue()));
+    @Override
+    public void onBleServiceDiscovered(BluetoothGatt gatt, int status) {
+        super.onBleServiceDiscovered(gatt, status);
+         if (status != BluetoothGatt.GATT_SUCCESS) {
+    	Log.e("Ble ServiceDiscovered","onServicesDiscovered received: " + status);
         }
+    }
 
-        @Override
-        public void onBleRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onBleRead(gatt, characteristic, status);
+    @Override
+    public void onBleCharacteristicChange(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        super.onBleCharacteristicChange(gatt, characteristic);
+         Log.i("BluetoothLEHelper","onCharacteristicChanged Value: " + Arrays.toString(characteristic.getValue()));
+    }
 
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                 Log.i("TAG", Arrays.toString(characteristic.getValue()));
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "onCharacteristicRead : "+Arrays.toString(characteristic.getValue()), Toast.LENGTH_SHORT).show());
-            }
+    @Override
+    public void onBleRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        super.onBleRead(gatt, characteristic, status);
+
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+    	 Log.i("TAG", Arrays.toString(characteristic.getValue()));
+    	runOnUiThread(() -> Toast.makeText(MainActivity.this, "onCharacteristicRead : "+Arrays.toString(characteristic.getValue()),             Toast.LENGTH_SHORT).show());
         }
+    }
 
-        @Override
-        public void onBleWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onBleWrite(gatt, characteristic, status);
-            runOnUiThread(() -> Toast.makeText(MainActivity.this, "onCharacteristicWrite Status : " + status, Toast.LENGTH_SHORT).show());
-        }
-    };
+    @Override
+    public void onBleWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        super.onBleWrite(gatt, characteristic, status);
+        runOnUiThread(() -> Toast.makeText(MainActivity.this, "onCharacteristicWrite Status : " + status, Toast.LENGTH_SHORT).show());
+    }
+};
 ```
 
 5) Connect to a found device
 ```
-	ble.connect(BluetoothDevice, bleCallbacks());
+    ble.connect(BluetoothDevice, bleCallbacks());
 ```
 
 6) On your OnDestroy, disconnect the device
 ```
- ble.disconnect();
+    ble.disconnect();
 ```
 
 * **Write in Ble devices**
