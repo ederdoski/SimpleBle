@@ -1,6 +1,6 @@
 # Android Simple Bluetooth Low Energy (BLE)
 
-![Example](img/simpleble.gif)
+![Example](img/simpleblee.gif)
 
 ## Introduction
 
